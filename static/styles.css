@@ -1,0 +1,376 @@
+.loading {
+    display: none; /* Inicialmente escondido */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    text-align: center;
+    font-size: 2em;
+    line-height: 100vh;
+    z-index: 1000;
+}
+.hidden {
+    display: none;
+}
+
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+}
+
+#about-info {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+}
+
+#close-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #333;
+    z-index: 10001;
+}
+
+#alert {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    display: none;
+}
+
+.alert-success {
+    background-color: #4CAF50;
+}
+
+.alert-error {
+    background-color: #f44336;
+}
+
+.alert {
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+h1 {
+    color: #007bff;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 10px;
+}
+
+.compact {
+    max-height: 150px;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+#toggleButton {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+#toggleButton:hover {
+    background-color: #0056b3;
+}
+
+#alert {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: none;
+    padding: 10px;
+    border-radius: 5px;
+    transition: display 0.5s ease-in-out;
+    z-index: 999;
+}
+
+#alert.success {
+    background-color: rgba(0, 255, 0, 0.8);
+}
+
+#alert.error {
+    background-color: rgba(255, 0, 0, 0.8);
+}
+
+#alert i {
+    margin-right: 5px;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-image: url('https://media.gettyimages.com/id/923561924/pt/foto/traditional-wooden-steps-in-vintage-library.jpg?s=612x612&w=0&k=20&c=nDiSIakW2zSgg4Ehm2gJ636S2rz_7P7eCqPbOLZRY30=');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    color: #333;
+    transition: background-color 0.3s ease-in-out;
+}
+
+body.dark {
+    background-color: #2b2b2b;
+    color: #ddd;
+}
+
+.container {
+    max-width: 800px;
+    width: 100%;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+    margin: 70px auto 20px;
+    margin-bottom: 20px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 10px 0;
+}
+
+li {
+    margin-bottom: 10px;
+}
+
+input[type="text"],
+input[type="number"] {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+    transition: border-color 0.3s ease-in-out;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+    border-color: #007bff;
+}
+
+button {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.button-container {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    margin: 10px;
+    display: flex;
+    align-items: flex-end;
+}
+
+.form-container {
+    display: none;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.form-container.active {
+    display: block;
+}
+
+/* Media Queries for Responsiveness */
+@media only screen and (max-width: 600px) {
+    #about-info, .container, .form-container {
+        width: 90%;
+        margin: 10px auto;
+        padding: 10px;
+    }
+
+    #toggleButton, .button-container button {
+        padding: 5px 10px;
+        font-size: 14px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    ul {
+        padding: 5px 0;
+    }
+
+    li {
+        font-size: 14px;
+    }
+}
+
+@media only screen and (min-width: 601px) and (max-width: 768px) {
+    #about-info, .container, .form-container {
+        width: 80%;
+    }
+
+    #toggleButton, .button-container button {
+        padding: 8px 15px;
+        font-size: 16px;
+    }
+
+    h1 {
+        font-size: 28px;
+    }
+
+    ul {
+        padding: 10px 0;
+    }
+
+    li {
+        font-size: 16px;
+    }
+}
+/* style.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px;
+    color: #333;
+}
+
+table {
+    width: 80%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 20px auto;
+    text-align: center;
+    text-decoration: none;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-primary {
+    background-color: #007bff;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.error {
+    color: rgb(255, 255, 255);
+    text-align: center;
+}
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.user-welcome {
+    background-color: #f0f8ff; /* cor de fundo */
+    padding: 10px;
+    border-radius: 15px; /* bordas arredondadas */
+    display: inline-block;
+}
+
+.welcome-text {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0;
+}

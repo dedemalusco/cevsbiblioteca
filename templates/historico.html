@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico de Transações</title>
+    <style>* {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        padding: 20px;
+    }
+    
+    h1 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 2.5em;
+    text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.8);
+    letter-spacing: 2px;
+    text-align: center;
+    background-color: #fff;
+    padding: 10px 20px;
+    border-radius: 10px;
+}
+    
+    #transacoes-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 800px;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .transacao {
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        transition: background-color 0.3s;
+    }
+    
+    .transacao:hover {
+        background-color: #eaeaea;
+    }
+    
+    .transacao p {
+        margin-bottom: 10px;
+    }
+    
+    .transacao p:last-child {
+        margin-bottom: 0;
+    }
+    
+    .transacao strong {
+        color: #555;
+    }</style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Histórico de Transações</h1>
+    <div id="transacoes-container">
+        {% for transacao in transacoes %}
+            <div class="transacao">
+                <p><strong>Tipo:</strong> {{ transacao.tipo }}</p>
+                <p><strong>Descrição:</strong> {{ transacao.descricao }}</p>
+                <p><strong>Horário:</strong> {{ transacao.horario }}</p>
+            </div>
+        {% endfor %}
+    </div>
+    
+</body>
+</html>

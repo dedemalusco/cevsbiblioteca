@@ -1,0 +1,21 @@
+<!-- templates/criar_usuario.html -->
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Criar Usuário</title>
+</head>
+<body>
+    <h1>Criar Usuário</h1>
+    <form method="post">
+        <label for="username">Nome de usuário:</label>
+        <input type="text" id="username" name="username"><br>
+        <label for="password">Senha:</label>
+        <input type="password" id="password" name="password"><br>
+        <label for="is_admin">Administrador:</label>
+        <input type="checkbox" id="is_admin" name="is_admin"><br>
+        <input type="submit" value="Criar">
+    </form>
+    <a href="{{ url_for('index') }}">Voltar</a>
+</body>
+</html>

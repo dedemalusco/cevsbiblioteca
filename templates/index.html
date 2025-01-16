@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <link rel="icon" type="image/png" href="/assets/book.png" sizes="32x32">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca Escolar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        #barraPesquisa {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #resultadosPesquisa {
+            list-style-type: none;
+            padding: 0;
+        }
+        #resultadosPesquisa li {
+            background: #f9f9f9;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        #resultadosPesquisa li strong {
+            display: block;
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+        }
+        .popup p {
+            margin: 0;
+        }
+        .popup-close {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            cursor: pointer;
+        }
+        .flash-message {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    font-size: 1.1em;
+    position: fixed; /* Alterado de relative para fixed */
+    top: 10px; /* Ajuste a posição conforme necessário */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000; /* Ajuste o z-index para um valor mais alto */
+}
+
+.flash-success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.flash-error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+.flash-message .close-btn {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.2em;
+    cursor: pointer;
+    color: inherit;
+}
+
+        
+        /* Estilos específicos para dispositivos móveis */
+        @media (max-width: 768px) {
+            body {
+                margin: 10px;
+            }
+            .container {
+                margin: 10px auto;
+                padding: 10px;
+            }
+            .button-container {
+                flex-direction: column;
+                position: static;
+                margin: 10px 0;
+            }
+            .button-container button {
+                margin-bottom: 10px;
+                width: 100%;
+            }
+            #toggleButton {
+                position: static;
+                margin: 10px 0;
+                width: 100%;
+            }
+            .form-container {
+                padding: 10px;
+            }
+            .header {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .user-welcome {
+                margin-bottom: 10px;
+            }
+            .btn-group {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+            }
+            .btn-group a {
+                margin-bottom: 10px;
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div id="loading" class="loading">Carregando...</div>
+    {% block content %}{% endblock %}
+
+    <div id="overlay" class="hidden"></div>
+
+    <div id="about-info" class="hidden">
+        <button id="close-btn" onclick="toggleAbout()">Fechar</button>
+        <p>Feito por André Rodrigues, estudante do CEPI Virginio Santillo no 2º ano do ensino médio na Eletiva de Robótica com o Prof. Luiz Felipe Nunes Naves.</p>
+    </div>
+
+    <button id="about-btn" onclick="toggleAbout()">
+        <i class="fas fa-info-circle"></i>
+    </button>
+    <div class="header">
+        {% if 'username' in session %}
+            <div class="user-welcome">
+                <p class="welcome-text">Bem-vindo, {{ session['username'] }}</p>
+            </div>
+            <div class="btn-group">
+
+                    <a href="{{ url_for('meus_emprestimos') }}" class="btn btn-primary">Ver Empréstimos</a>
+
+                <a href="{{ url_for('logout') }}" class="btn btn-secondary">Logout</a>
+            </div>
+        {% endif %}
+    </div>
+    <div class="container">
+        <h1>Biblioteca Escolar</h1>
+
+        <input type="text" id="barraPesquisa" placeholder="Pesquisar livros...">
+        <div id="resultadosPesquisaContainer" style="display: none;">
+            <ul id="resultadosPesquisa"></ul>
+        </div>
+
+        <button id="toggleButton" onclick="toggleList()">Mostrar mais</button>
+        <ul id="lista-livros" class="compact">
+            <!-- Iterar sobre a lista de livros e criar uma entrada para cada livro -->
+            {% for livro in livros %}
+            
+            <li>
+                <div class="book-info">
+                    <strong>{{ livro.titulo }}</strong> - {{ livro.autor }} - Disponíveis: {{ livro.exemplares_disponiveis }}
+                    {% if livro.emprestado %}
+                        <i class="fas fa-info-circle" onclick="exibirPopup('{{ livro.aluno }}', '{{ livro.horario_emprestimo }}')"></i>
+                    {% endif %}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% if is_admin %}
+    <a href="{{ url_for('historico') }}" class="btn btn-primary">Ver Histórico de Transações</a>
+    {% endif %}
+    
+    {% if is_admin %}
+    <div class="button-container">
+        <button onclick="toggleForm('adicionar-container')"><i class="fas fa-plus"></i> Novos livros</button>
+        <button onclick="toggleForm('emprestar-container')"><i class="fas fa-book-reader"></i> Empréstimos</button>
+        <button onclick="toggleForm('devolver-container')"><i class="fas fa-book-open"></i> Devoluções</button>
+        <button onclick="toggleForm('criar-usuario-container')"><i class="fas fa-user-plus"></i> Criar Usuário</button> <!-- Novo botão adicionado aqui -->
+
+    </div>
+
+    {% endif %}
+    <div class="divcontainer">
+        <div id="adicionar-container" class="form-container" style="display: none;">
+            <h2>Adicionar Novo Livro</h2>
+            <form id="form-adicionar-livro" action="/adicionar_livro" method="post">
+                <input type="text" name="titulo" placeholder="Título do livro" required>
+                <input type="text" name="autor" placeholder="Autor" required>
+                <input type="number" name="exemplares" placeholder="Quantidade" required>
+                <input type="text" name="canal" placeholder="Plateleira" required>
+                <button type="submit">Adicionar Livro</button>
+            </form>
+        </div>
+        
+
+        <div id="emprestar-container" class="form-container" style="display: none;">
+            <h2>Emprestar Livro</h2>
+            <form id="form-emprestar-livro" method="post" action="{{ url_for('emprestar_livro') }}">
+                <input type="text" name="pesquisa" placeholder="Título do livro" required>
+                <input type="text" name="aluno" placeholder="Aluno" required>
+                <input type="number" name="quantidade" placeholder="Quantidade" required>
+                <button type="submit">Emprestar</button>
+            </form>
+        </div>
+
+        
+
+        <div id="devolver-container" class="form-container" style="display: none;">
+            <h2>Devolver Livro</h2>
+            <form id="form-devolver-livro">
+                <input type="text" name="pesquisa" placeholder="Título ou Código do livro" required>
+                <input type="text" name="aluno" placeholder="Aluno" required>
+                <input type="number" name="quantidade" placeholder="Quantidade" required>
+                <button type="submit">Devolver</button>
+            </form>
+            
+            <div id="emprestimos-container">
+                <h2>Lista de Empréstimos</h2>
+                <ul id="lista-emprestimos"></ul>
+            </div>
+        </div>
+    </div>
+    <div id="criar-usuario-container" class="form-container" style="display: none;">
+        <h2>Criar Usuário</h2>
+        <form id="form-criar-usuario" action="/criar_usuario" method="post">
+            <input type="text" name="username" placeholder="Nome de Usuário" required>
+            <input type="text" name="password" placeholder="Senha" required>
+            <label for="is_admin">Administrador:</label>
+            <input type="checkbox" id="is_admin" name="is_admin" value="1">
+            <button type="submit">Criar Usuário</button>
+        </form>
+    </div>
+    
+
+    <div id="alert" class="hidden"></div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul>
+        {% for category, message in messages %}
+            <li class="flash-message flash-{{ category }}">
+                <span>{{ message }}</span>
+                <button class="close-btn" onclick="fecharMensagem(this)">&times;</button>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script src="/static/scripts.js"></script>
+    <script>
+            document.getElementById('form-emprestar-livro').addEventListener('submit', function(event) {
+        var submitButton = this.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+    });
+    $(document).ready(function() {
+    $('#barraPesquisa').on('input', function() {
+        var termoPesquisa = $(this).val().trim();
+        if (termoPesquisa.length > 0) {
+            $.ajax({
+                url: '/buscar_livros',
+                method: 'GET',
+                data: { q: termoPesquisa },
+                success: function(response) {
+                    $('#resultadosPesquisa').empty();
+                    if (response.length > 0) {
+                        $('#resultadosPesquisaContainer').show();
+                        response.forEach(function(livro) {
+                            var emprestimoInfo = livro.emprestado
+                                ? `<em>Emprestado para ${livro.aluno} no dia ${new Date(livro.horario_emprestimo).toLocaleString()}</em>`
+                                : 'Disponível';
+
+                            if (livro.emprestado) {
+                                emprestimoInfo += ` <i class="fas fa-info-circle" style="cursor: pointer;" onclick="exibirPopup('${livro.aluno}', '${livro.horario_emprestimo}')"></i>`;
+                            }
+
+                            $('#resultadosPesquisa').append(`
+                                <li>
+                                    <strong>${livro.titulo}</strong> por ${livro.autor}
+                                    <br>
+                                    Código: ${livro.codigo}
+                                    <br>
+                                    Exemplares disponíveis: ${livro.exemplares_disponiveis}
+                                    <br>
+                                    O livro está na  plateleira ${livro.canal}                                
+                                </li>
+                            `);
+                        });
+                    } else {
+                        $('#resultadosPesquisaContainer').hide();
+                    }
+                }
+            });
+        } else {
+            $('#resultadosPesquisa').empty();
+            $('#resultadosPesquisaContainer').hide();
+        }
+    });
+
+    // Ocultar resultados quando clicar fora da barra de pesquisa ou dos resultados
+    $(document).on('click', function(event) {
+        if (!$(event.target).closest('#barraPesquisa, #resultadosPesquisaContainer').length) {
+            $('#resultadosPesquisaContainer').hide();
+        }
+    });
+
+
+    // Desativar o botão de envio após o primeiro clique
+    $('#form-adicionar-livro').on('submit', function(event) {
+        var $form = $(this);
+        var $button = $form.find('button[type="submit"]');
+        if ($button.data('submitted') === true) {
+            event.preventDefault();
+        } else {
+            $button.data('submitted', true);
+            $button.prop('disabled', true);
+        }
+    });
+});
+
+// Função para exibir o popup com a mensagem especial
+function exibirPopup(aluno, horario) {
+    const popupMessage = document.getElementById('popup-message');
+    popupMessage.textContent = `Este livro está indisponível. Foi emprestado para ${aluno} em ${horario}. Peça que seu amigo devolva para a biblioteca para que ele fique disponível novamente :)`;
+    document.getElementById('popup').style.display = 'block';
+}
+
+// Função para fechar o popup
+function fecharPopup() {
+    document.getElementById('popup').style.display = 'none';
+}
+
+function fecharMensagem(element) {
+    $(element).parent().hide();
+}
+
+function toggleAbout() {
+    $('#about-info, #overlay').toggleClass('hidden');
+}
+
+function toggleForm(formId) {
+    $('.form-container').hide();
+    $('#' + formId).show();
+}
+
+function toggleList() {
+    $('#lista-livros').toggle();
+}
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/instascan@2"></script>
+    <script>
+        let scanner = null;
+    
+        function iniciarLeituraQR() {
+            scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+            scanner.addListener('scan', function (conteudoQr) {
+                document.getElementById('resultadoQR').textContent = conteudoQr;
+                scanner.stop();
+            });
+            Instascan.Camera.getCameras().then(cameras => {
+                if (cameras.length > 0) {
+                    scanner.start(cameras[0]);
+                } else {
+                    console.error('Nenhuma câmera encontrada.');
+                    alert('Nenhuma câmera encontrada.');
+                }
+            }).catch(e => {
+                console.error('Erro ao acessar câmera:', e);
+                alert('Erro ao acessar câmera.');
+            });
+        }
+    </script>
+    <script src="/static/scripts.js"></script>
+    
+</body>
+</html>
